@@ -55,7 +55,7 @@ export default function App() {
       password: state.password,
     };
 
-    fetch(`http://localhost:8000/user?email=${state.email}`, {
+    fetch(`http://localhost:3000/user?email=${state.email}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -67,7 +67,7 @@ export default function App() {
           notifyError("Email is already registered. Please use a different email.");
           setLoading(false); // Set loading to false
         } else {
-          fetch("http://localhost:8000/user", {
+          fetch("http://localhost:3000/user", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -101,7 +101,7 @@ export default function App() {
     e.preventDefault();
     setLoading(true); // Set loading to true
 
-    fetch(`http://localhost:8000/user?email=${state.email}`, {
+    fetch(`http://localhost:3000/user?email=${state.email}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

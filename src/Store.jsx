@@ -1,5 +1,7 @@
 import React, { useEffect, useReducer, useState } from 'react';
 import { Tabs, Tab, Card, CardBody } from "@nextui-org/react";
+import { Search } from 'lucide-react';
+
 
 const initialState = {
   name: '',
@@ -31,9 +33,10 @@ export default function Store() {
   const [placement, setPlacement] = useState("top");
   const [editingItem, setEditingItem] = useState(null); // Track item being edited
   const [listId, setListId] = useState(null); // For shared list ID
+  const[searchQuery,setSearchQuery]=useState('')
 
   useEffect(() => {
-    fetch("http://localhost:8000/shopping_list")
+    fetch("http://localhost:3000/shopping_list")
       .then((res) => res.json())
       .then((data) => {
         console.log('Fetched data:', data);
@@ -49,7 +52,7 @@ export default function Store() {
     const sorted = [...items].sort((a, b) => {
       return a.name.localeCompare(b.name);
     });
-    setItems(sorted); // Updating the state
+    setItems(sorted);
   }
 
   function HandleFormSubmit(e) {
@@ -65,7 +68,7 @@ export default function Store() {
 
     // If editing, update the item; otherwise, create a new one
     if (editingItem) {
-      fetch(`http://localhost:8000/shopping_list/${editingItem.id}`, {
+      fetch(`http://localhost:3000/shopping_list/${editingItem.id}`, {
         method: 'PUT',
         headers: {
           "Content-Type": "application/json"
@@ -85,7 +88,7 @@ export default function Store() {
           console.log('Error updating item:', error);
         });
     } else {
-      fetch("http://localhost:8000/shopping_list", {
+      fetch("http://localhost:3000/shopping_list", {
         method: 'POST',
         headers: {
           "Content-Type": "application/json"
@@ -110,8 +113,14 @@ export default function Store() {
 
   // Function to filter items based on their tags
   const filterItemsByTag = (tag) => {
-    return items.filter((item) => item.tags === tag);
+    return items
+      .filter((item) => item.tags === tag)
+      .filter((item) => 
+        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.note.toLowerCase().includes(searchQuery.toLowerCase())
+      );
   };
+
 
   // Sorting out the data by using sort element
 
@@ -132,7 +141,7 @@ export default function Store() {
   };
 
   const HandleShareList = () => {
-    fetch("http://localhost:8000/share_list", {
+    fetch("http://localhost:3000/share_list", {
       method: 'POST',
       headers: {
         "Content-Type": "application/json"
@@ -287,6 +296,16 @@ export default function Store() {
 
       <div className="flex flex-col px-4">
         <div className="flex w-full flex-col">
+        <div className="relative mb-4 w-full max-w-md mx-auto">
+            <input
+              type="text"
+              placeholder="Search items..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full scroll px-20 py-2 pl-32 pr-4 text-gray-700 bg-white border rounded-lg focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-100"
+            />
+            <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+          </div>
           <Tabs aria-label="Options">
             <Tab key="Groceries" title="Grocery List">
               <Card className="w-96">
